@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+/* Everything visual lives inline in JSX as Tailwind utilities.
+   This file contains ONLY what cannot be expressed inline:
+   theme variables, keyframes, and view-transition pseudo-elements. */
+
+:root {
+  --paper: #eae8e2;
+  --ink: #141412;
+  --lime: #e3e84a;
+  --line: rgba(20, 20, 18, 0.16);
+  --soft: rgba(20, 20, 18, 0.045);
+  --card: #f9f8f4;
+}
+:root.dark {
+  --paper: #131311;
+  --ink: #edeae3;
+  --line: rgba(237, 234, 227, 0.14);
+  --soft: rgba(237, 234, 227, 0.05);
+  --card: #1b1b19;
+}
+
+body { background: var(--paper); color: var(--ink); font-family: "Archivo", Helvetica, sans-serif; }
+::selection { background: var(--lime); color: #141412; }
+
+/* keyframes (not expressible inline) */
+@keyframes floaty { 0%, 100% { transform: rotate(5deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-9px); } }
+@keyframes bob { from { translate: 0 0; } to { translate: 0 -3px; } }
+/* theme switch: circle sweep (View Transitions API) */
+html.theming, html.theming * { transition: none !important; }
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-old(root) { z-index: 1; }
+::view-transition-new(root) {
+  z-index: 9999;
+  clip-path: circle(0px at var(--vt-x, 95%) var(--vt-y, 40px));
+  animation: vtSweep 0.42s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes vtSweep { to { clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 95%) var(--vt-y, 40px)); } }
