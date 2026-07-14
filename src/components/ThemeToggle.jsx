@@ -32,9 +32,9 @@ export default function ThemeToggle({ hidden }) {
   };
 
   return (
-    <button aria-label="Toggle dark mode" onClick={toggle}
+    <button aria-label="Toggle deep-space theme" title="Toggle deep-space theme" onClick={toggle}
             className={`fixed top-5 right-5 z-[10001] w-[53px] h-[53px] rounded-full flex items-center justify-center text-[17px] cursor-pointer active:scale-[0.88] transition-[transform,opacity] duration-500 backdrop-blur-2xl bg-white/45 border border-white/55 shadow-[0_12px_36px_rgba(20,20,18,0.14),inset_0_1px_0_rgba(255,255,255,0.75)] ${hidden ? "opacity-0 pointer-events-none" : "opacity-100"}`}>
-      ☾
+      ◐
     </button>
   );
 }

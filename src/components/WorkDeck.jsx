@@ -1,6 +1,5 @@
-/* WorkDeck - pinned project pile: the section pins for 380vh while each
-   card falls from above (scroll-scrubbed) and lands with its own tilt.
-   Hover fires the lime shutter wipe with metric + description. */
+/* WorkDeck - pinned project pile: each card rockets in from alternating sides,
+   then lands on the stack. Hover reveals the project details. */
 import { useEffect, useRef } from "react";
 import { PROJECTS } from "../data.js";
 
@@ -12,9 +11,14 @@ export default function WorkDeck() {
   const stageRef = useRef(null);
   const cardRefs = useRef([]);
 
-  /* pinned pile: each card falls from above and lands on the stack (scroll-scrubbed) */
+  /* Cards alternate left/right like arriving spacecraft, then settle into the pile. */
   useEffect(() => {
-    const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+    const clamp = (v) => Math.max(0, Math.min(1, v));
+    const easeOutQuint = (t) => 1 - Math.pow(1 - t, 5);
+    const easeOutBack = (t) => {
+      const c1 = 1.18, c3 = c1 + 1;
+      return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+    };
     const upd = () => {
       const stage = stageRef.current;
       if (!stage) return;
@@ -22,20 +26,28 @@ export default function WorkDeck() {
       const vh = window.innerHeight;
       const r = stage.getBoundingClientRect();
       let p = Math.max(0, Math.min(1, -r.top / Math.max(1, r.height - vh)));
-      p = Math.max(0, Math.min(1, p * 1.16 - 0.08)); /* brief hold at the ends */
-      const seq = p * (cards.length - 1);
+      p = clamp(p * 1.12 - 0.04); /* a short reveal before the first launch */
+      const seq = p * (cards.length + 0.18);
+      const arrivals = cards.map((_, i) => clamp(seq - i));
       cards.forEach((c, i) => {
-        const landed = Math.max(0, Math.min(cards.length - 1 - i, seq - i));
-        const sc = 1 - 0.022 * landed;
-        if (i === 0) {
-          c.style.transform = `translate(-50%,-50%) rotate(${ROTS[0]}deg) scale(${sc.toFixed(4)})`;
-          return;
-        }
-        const d = Math.max(0, Math.min(1, seq - (i - 1)));
-        const e = easeOutCubic(d);
-        const y = (1 - e) * -(vh * 1.3) + OYS[i] * e;
-        const rot = -8 * (1 - e) + ROTS[i] * e;
-        c.style.transform = `translate(-50%,-50%) translate(${(OXS[i] * e).toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(2)}deg) scale(${sc.toFixed(4)})`;
+        const d = arrivals[i];
+        const e = easeOutQuint(d);
+        const dock = easeOutBack(d);
+        const side = i % 2 === 0 ? -1 : 1; // left, right, left, right
+        const travel = Math.max(window.innerWidth * 1.05, c.offsetWidth * 1.38);
+        const x = side * travel * (1 - dock) + OXS[i] * e;
+        const arc = Math.sin(d * Math.PI) * vh * (0.13 + i * 0.012);
+        const y = -arc + Math.sin(d * Math.PI * 2) * side * 18 + OYS[i] * e;
+        const bank = side * -13 * (1 - e) + side * Math.sin(d * Math.PI) * 4.5;
+        const rot = bank + ROTS[i] * e;
+        const depth = arrivals.slice(i + 1).reduce((sum, value) => sum + easeOutQuint(value), 0);
+        const sc = (0.82 + 0.18 * e) * (1 - 0.022 * depth);
+        const engine = d < 0.84 ? 1 : clamp((1 - d) / 0.16);
+        const ignition = clamp(d * 7);
+        c.style.setProperty("--flight", (1 - e).toFixed(3));
+        c.style.setProperty("--engine", (engine * ignition).toFixed(3));
+        c.style.setProperty("--velocity", clamp(1 - d * 0.72).toFixed(3));
+        c.style.transform = `translate(-50%,-50%) translate(${x.toFixed(1)}px,${y.toFixed(1)}px) rotate(${rot.toFixed(2)}deg) scale(${sc.toFixed(4)})`;
       });
     };
     upd();
@@ -46,7 +58,7 @@ export default function WorkDeck() {
 
   return (
     <section id="work" className="relative z-[1] max-w-[1180px] mx-auto px-6 pt-32">
-      <div ref={stageRef} className="h-[600vh] relative -mt-2">
+      <div ref={stageRef} className="h-[650vh] relative -mt-2">
         <div className="sticky top-0 h-screen overflow-hidden flex flex-col">
           <div className="pt-24 shrink-0">
             <div className="text-center text-[12px] font-semibold tracking-[0.14em] opacity-55"> WORK </div>
@@ -61,8 +73,17 @@ export default function WorkDeck() {
             {PROJECTS.map((pr, i) => (
               <a key={pr.title} href={pr.href} target="_blank" rel="noopener"
                  ref={(el) => (cardRefs.current[i] = el)}
-                 style={{ transform: i === 0 ? "translate(-50%,-50%)" : "translate(-50%,-50%) translateY(-130vh)" }}
-                 className="group absolute left-1/2 top-1/2 w-[min(860px,calc(100vw-44px))] h-[min(54vh,460px)] grid grid-cols-1 md:grid-cols-[1fr_1.15fr] md:grid-rows-[auto_1fr_auto] gap-x-8 p-[22px] bg-[var(--card)] border border-[var(--line)] rounded-lg overflow-hidden will-change-transform shadow-[0_30px_70px_rgba(20,20,18,0.22)]">
+                 data-flight-side={i % 2 === 0 ? "left" : "right"}
+                 style={{ "--flight": 1, "--engine": 0, "--velocity": 1, transform: `translate(-50%,-50%) translateX(${i % 2 === 0 ? "-135vw" : "135vw"})` }}
+                 className="rocket-card group absolute left-1/2 top-1/2 w-[min(860px,calc(100vw-44px))] h-[min(54vh,460px)] grid grid-cols-1 md:grid-cols-[1fr_1.15fr] md:grid-rows-[auto_1fr_auto] gap-x-8 p-[22px] bg-[var(--card)] border border-[var(--line)] rounded-lg overflow-visible will-change-transform shadow-[0_30px_70px_rgba(20,20,18,0.22)]">
+                <div className="cargo-stamp" aria-hidden><i /> PROJECT CARGO · 0{i + 1}</div>
+                <div className="rocket-tug" aria-hidden>
+                  <i className="tug-tether" />
+                  <span className="tug-body"><i className="tug-window" /><b className="tug-seam" /></span>
+                  <i className="tug-fin tug-fin-top" />
+                  <i className="tug-fin tug-fin-bottom" />
+                  <span className="tug-engine"><i /><b /><em /></span>
+                </div>
                 <div className="relative min-h-0 md:col-start-2 md:row-span-3 overflow-hidden rounded bg-[var(--soft)]">
                   <img src={pr.img} alt={pr.title}
                        className="absolute inset-0 w-full h-full object-contain p-2 transition-transform duration-700 group-hover:scale-[1.03]" />
@@ -74,7 +95,7 @@ export default function WorkDeck() {
                 <div className="md:col-start-1 md:row-start-3 mt-3 text-[11px] font-semibold tracking-[0.1em] opacity-55">{pr.sub}</div>
 
                 {/* lime shutter wipe */}
-                <div className="absolute inset-0 z-[2] bg-[#F2FF00] text-[#141412] flex flex-col justify-between p-[22px] pointer-events-none origin-center scale-y-0 transition-transform duration-500 ease-[cubic-bezier(0.65,0.05,0.36,1)] group-hover:scale-y-100">
+                <div className="absolute inset-0 z-[2] overflow-hidden rounded-lg bg-[#F2FF00] text-[#141412] flex flex-col justify-between p-[22px] pointer-events-none origin-center scale-y-0 transition-transform duration-500 ease-[cubic-bezier(0.65,0.05,0.36,1)] group-hover:scale-y-100">
                   <span className="text-[10.5px] font-semibold tracking-[0.06em] uppercase opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-300">{pr.tag}</span>
                   <div className="opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-300">
                     <b className="block text-[clamp(22px,2vw,30px)] font-extrabold tracking-tight">{pr.metric}</b>

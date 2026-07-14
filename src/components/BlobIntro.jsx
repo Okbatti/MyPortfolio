@@ -1,6 +1,5 @@
-/* BlobIntro - first-load overlay: % counter, then an ink-blob (SVG gooey
-   metaballs) blooms and reveals the photo. A scroll GESTURE (not scroll
-   distance) dismisses it; returning to the very top brings it back. */
+/* BlobIntro - a cinematic orbital gateway. The portrait still blooms through
+   the original metaball mask, now surrounded by a living space scene. */
 import { useEffect, useRef, useState } from "react";
 import { NOISE_URI } from "../data.js";
 
@@ -103,12 +102,36 @@ export default function BlobIntro({ shown, setShown, loading, setLoading }) {
 
   return (
     <div onPointerMove={spray}
-      className={`fixed inset-0 z-[9990] bg-[var(--paper)] transition-opacity duration-700 ${shown ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-      <div aria-hidden className="absolute inset-0 pointer-events-none opacity-35 mix-blend-multiply" style={{ backgroundImage: NOISE_URI }} />
-      <span className="absolute top-8 right-6 md:right-12 font-mono text-[13px] font-bold tracking-wide transition-opacity duration-500"
-            style={{ opacity: burst ? 0 : 1 }}>{pct}%</span>
-      <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${burst ? "opacity-100" : "opacity-0"}`}>
-        <svg viewBox="0 0 900 700" className="w-[78vw] max-w-[740px] overflow-visible">
+      className={`intro-cosmos fixed inset-0 z-[9990] bg-[var(--paper)] transition-opacity duration-700 ${shown ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+      <div aria-hidden className="intro-texture absolute inset-0 pointer-events-none opacity-30 mix-blend-screen" style={{ backgroundImage: NOISE_URI }} />
+      <div aria-hidden className="intro-nebula intro-nebula-a" />
+      <div aria-hidden className="intro-nebula intro-nebula-b" />
+      <div aria-hidden className="intro-starcloth" />
+      <div aria-hidden className="intro-grid" />
+
+      <div className="intro-topline">
+        <span>OWAIS / PERSONAL UNIVERSE</span>
+        <span className="intro-signal"><i /> SIGNAL ONLINE</span>
+        <span>BLR 12.9716° N · 77.5946° E</span>
+      </div>
+
+      <div className={`intro-loading ${burst ? "is-complete" : ""}`}>
+        <div><span>INITIALISING ORBIT</span><b>{pct.toString().padStart(3, "0")}%</b></div>
+        <i><em style={{ width: `${pct}%` }} /></i>
+      </div>
+
+      <div className={`intro-wordmark transition-opacity duration-700 ${burst ? "opacity-100" : "opacity-0"}`} aria-hidden>
+        <span>ENTER</span><span>MY ORBIT</span>
+      </div>
+
+      <div className={`intro-portal transition-all duration-700 ${burst ? "opacity-100 scale-100" : "opacity-0 scale-90"}`}>
+        <div aria-hidden className="portal-halo" />
+        <div aria-hidden className="portal-orbit portal-orbit-a"><i /><b>AI</b></div>
+        <div aria-hidden className="portal-orbit portal-orbit-b"><i /><b>ML</b></div>
+        <div aria-hidden className="portal-orbit portal-orbit-c"><i /></div>
+        <div aria-hidden className="portal-planet"><i /></div>
+        <div aria-hidden className="intro-satellite"><i /><b /><em /></div>
+        <svg viewBox="0 0 900 700" className="relative z-[2] w-[min(62vw,650px)] overflow-visible">
           <defs>
             <filter id="goo" x="-30%" y="-30%" width="160%" height="160%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="16" result="b" />
@@ -126,14 +149,18 @@ export default function BlobIntro({ shown, setShown, loading, setLoading }) {
           </defs>
           <image href="/assets/owais-profile.png" x="130" y="-40" width="640" height="780" preserveAspectRatio="xMidYMid slice" mask="url(#blobMask)" />
         </svg>
+        <div className="portal-caption portal-caption-left"><span>01</span> BUILDER</div>
+        <div className="portal-caption portal-caption-right"><span>∞</span> EXPLORER</div>
       </div>
-      <div className={`absolute left-6 bottom-6 font-serif italic text-[clamp(18px,2.4vw,30px)] leading-tight transition-all duration-700 delay-200 ${burst ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}
+
+      <div className={`intro-manifesto absolute left-6 md:left-12 bottom-7 font-serif italic text-[clamp(18px,2.4vw,30px)] leading-tight transition-all duration-700 delay-200 ${burst ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"}`}
            style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
-        Ideas matter most when they become <em>real</em>.
+        Ideas become real when they <em>leave the atmosphere</em>.
       </div>
-      <span className={`absolute right-6 bottom-7 text-[11px] font-semibold tracking-[0.14em] uppercase transition-opacity duration-700 delay-500 ${burst ? "opacity-55" : "opacity-0"}`}>
-        Scroll to enter
-      </span>
+      <button onClick={() => burst && setShown(false)} aria-label="Enter portfolio"
+              className={`intro-enter transition-all duration-700 delay-500 ${burst ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3 pointer-events-none"}`}>
+        <i><b>↓</b></i><span>SCROLL TO<br />BEGIN DESCENT</span>
+      </button>
     </div>
   );
 }

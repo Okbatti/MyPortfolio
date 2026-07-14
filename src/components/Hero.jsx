@@ -15,12 +15,17 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative z-[1] pt-28 px-6 min-h-[92vh] flex flex-col">
+    <section className="relative z-[1] pt-28 px-6 min-h-[92vh] flex flex-col overflow-hidden">
+      <div className="hero-orbit" aria-hidden><i /><i /></div>
+      <div className="mx-auto mb-5 inline-flex items-center gap-2.5 rounded-full border border-[var(--glass-border)] bg-[var(--glass)] px-4 py-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[var(--accent)] backdrop-blur-xl">
+        <i className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_12px_var(--accent)] animate-pulse" />
+        AI builder · exploring the next frontier
+      </div>
       <div className="relative">
         <h1 className="m-0 flex justify-center items-center gap-[0.12em] select-none whitespace-nowrap font-normal text-[clamp(54px,10.4vw,164px)] leading-[0.9] tracking-[-0.045em] text-transparent bg-clip-text"
             style={{
               fontFamily: "'Instrument Serif', Georgia, serif",
-              backgroundImage: "linear-gradient(178deg,#FDFDFD 4%,#C9C9C7 22%,#767472 40%,#4E4C4A 50%,#E8E8E6 57%,#9A9896 74%,#D8D8D6 88%,#6E6C6A 99%)",
+              backgroundImage: "linear-gradient(178deg,#FFFFFF 4%,#BCEBFF 21%,#6688B9 40%,#F3FBFF 53%,#879AC7 70%,#D9F5FF 88%,#7782A8 99%)",
               backgroundSize: "200% 200%",
             }}>
           <span>owais</span><span>ali</span>
@@ -40,10 +45,10 @@ export default function Hero() {
 
       <h2 className="mx-auto mt-14 max-w-[820px] text-center font-normal text-[clamp(38px,4.9vw,74px)] leading-[1.04] tracking-tight"
           style={{ fontFamily: "'Instrument Serif', Georgia, serif" }}>
-        I turn ambitious AI ideas into <em className="italic">working products</em>.
+        I turn ambitious AI ideas into <em className="italic text-[var(--accent)]">working products</em>.
       </h2>
       <p className="mx-auto mt-6 max-w-[380px] text-center text-[14.5px] leading-relaxed opacity-75">
-        Computer Science student focused on AI, machine learning and emerging technology.<br />From multi-agent systems to useful, grounded AI tools.
+        Computer Science student focused on AI, machine learning and emerging technology.<br />Building useful systems at the edge of what’s possible.
       </p>
 
       <div className="flex justify-center gap-3 mt-9">

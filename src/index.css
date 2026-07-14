@@ -5,23 +5,396 @@
    theme variables, keyframes, and view-transition pseudo-elements. */
 
 :root {
-  --paper: #eae8e2;
-  --ink: #141412;
-  --lime: #e3e84a;
-  --line: rgba(20, 20, 18, 0.16);
-  --soft: rgba(20, 20, 18, 0.045);
-  --card: #f9f8f4;
+  --paper: #eef4ff;
+  --ink: #11162b;
+  --lime: #63d9f6;
+  --accent: #087eaa;
+  --line: rgba(40, 66, 114, 0.2);
+  --soft: rgba(76, 124, 190, 0.09);
+  --card: rgba(246, 250, 255, 0.8);
+  --glass: rgba(235, 245, 255, 0.64);
+  --glass-border: rgba(255, 255, 255, 0.72);
 }
 :root.dark {
-  --paper: #131311;
-  --ink: #edeae3;
-  --line: rgba(237, 234, 227, 0.14);
-  --soft: rgba(237, 234, 227, 0.05);
-  --card: #1b1b19;
+  --paper: #050714;
+  --ink: #f1f6ff;
+  --lime: #7de9ff;
+  --accent: #8cecff;
+  --line: rgba(174, 211, 255, 0.17);
+  --soft: rgba(136, 184, 255, 0.08);
+  --card: rgba(12, 17, 39, 0.82);
+  --glass: rgba(12, 19, 43, 0.66);
+  --glass-border: rgba(174, 211, 255, 0.2);
 }
 
+html { scroll-behavior: smooth; }
 body { background: var(--paper); color: var(--ink); font-family: "Archivo", Helvetica, sans-serif; }
 ::selection { background: var(--lime); color: #141412; }
+
+/* Deep-space scene. It is entirely code-native so it stays crisp, lightweight,
+   and theme-aware at every viewport size. */
+.space-scene {
+  --space-x: 0px;
+  --space-y: 0px;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 52% 26%, rgba(108, 113, 221, 0.16), transparent 32%),
+    linear-gradient(145deg, #f7faff 0%, #e8f1ff 52%, #eff5ff 100%);
+}
+.dark .space-scene {
+  background:
+    radial-gradient(circle at 52% 26%, rgba(78, 78, 190, 0.18), transparent 34%),
+    linear-gradient(145deg, #040612 0%, #080d22 52%, #040611 100%);
+}
+.space-nebula {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(75px);
+  opacity: 0.28;
+  transform: translate3d(var(--space-x), var(--space-y), 0);
+  transition: transform 1.6s cubic-bezier(.2,.8,.2,1);
+}
+.space-nebula-one { width: 52vw; height: 32vw; top: -10%; left: -13%; background: #6f63ee; }
+.space-nebula-two { width: 46vw; height: 38vw; right: -18%; top: 42%; background: #168bb7; opacity: 0.18; }
+.star-field {
+  position: absolute;
+  inset: -2%;
+  transform: translate3d(calc(var(--space-x) * -.55), calc(var(--space-y) * -.55), 0);
+  transition: transform 2s cubic-bezier(.2,.8,.2,1);
+}
+.star {
+  position: absolute;
+  border-radius: 999px;
+  background: #355784;
+  box-shadow: 0 0 7px rgba(68, 126, 197, 0.45);
+  animation: starPulse 5.5s ease-in-out infinite;
+}
+.dark .star { background: #fff; box-shadow: 0 0 8px rgba(165, 221, 255, 0.75); }
+@keyframes starPulse { 0%, 100% { transform: scale(.72); } 50% { transform: scale(1.38); opacity: 1; } }
+
+.orbit {
+  position: absolute;
+  border: 1px solid rgba(74, 106, 161, 0.16);
+  border-radius: 50%;
+  transform: rotate(-18deg);
+}
+.dark .orbit { border-color: rgba(157, 205, 255, 0.13); }
+.orbit-one { width: 54vw; height: 20vw; min-width: 580px; min-height: 220px; top: 11%; right: -19%; }
+.orbit-two { width: 38vw; height: 14vw; min-width: 420px; min-height: 155px; left: -16%; bottom: 16%; transform: rotate(22deg); }
+.orbit-moon {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  left: 17%;
+  top: 3%;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 14px var(--accent);
+}
+.planet { position: absolute; border-radius: 50%; }
+.planet-violet {
+  width: clamp(115px, 13vw, 205px);
+  aspect-ratio: 1;
+  right: -4.2vw;
+  top: 15vh;
+  background:
+    radial-gradient(circle at 29% 26%, rgba(255,255,255,.6) 0 1.5%, transparent 2%),
+    radial-gradient(circle at 40% 35%, #b9c2ff 0%, #7775ca 28%, #353461 67%, #171a34 100%);
+  box-shadow: -20px 12px 55px rgba(87, 91, 185, 0.26), inset -22px -15px 34px rgba(4, 6, 20, 0.62);
+  opacity: .58;
+}
+.planet-violet i {
+  position: absolute;
+  width: 145%;
+  height: 24%;
+  left: -23%;
+  top: 39%;
+  border: 5px solid rgba(154, 200, 255, .34);
+  border-left-color: transparent;
+  border-right-color: transparent;
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+.planet-amber {
+  width: 34px;
+  aspect-ratio: 1;
+  left: 8%;
+  top: 61%;
+  background: radial-gradient(circle at 30% 28%, #fff3ca, #dd9a62 38%, #65364c 100%);
+  box-shadow: 0 0 36px rgba(230, 157, 104, .28);
+  opacity: .6;
+}
+.spacecraft {
+  position: absolute;
+  left: 15%;
+  top: 22%;
+  width: 86px;
+  height: 38px;
+  opacity: .42;
+  transform: rotate(-8deg) translate3d(calc(var(--space-x) * .35), calc(var(--space-y) * .35), 0);
+  animation: craftDrift 8s ease-in-out infinite;
+}
+.craft-body { position:absolute; left:35px; top:10px; width:18px; height:18px; border-radius: 45% 55% 48% 52%; background:#9fb6ce; box-shadow: inset -5px -4px 5px #35465c; }
+.craft-window { position:absolute; z-index:2; left:40px; top:13px; width:6px; height:6px; border-radius:50%; background:#7ee9ff; box-shadow:0 0 8px #7ee9ff; }
+.craft-panel { position:absolute; top:13px; width:31px; height:12px; border:1px solid rgba(129,200,255,.58); background:repeating-linear-gradient(90deg, #182b5a 0 6px, #4981b5 7px 8px); }
+.craft-panel-left { left:0; }
+.craft-panel-right { right:0; }
+@keyframes craftDrift { 0%,100% { margin-top:0; } 50% { margin-top:-10px; } }
+.shooting-star {
+  position:absolute;
+  top:14%;
+  left:63%;
+  width:86px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.85));
+  transform:rotate(-28deg) translateX(-180px);
+  opacity:0;
+  animation:shoot 10s ease-in infinite 2s;
+}
+@keyframes shoot { 0%,70% { opacity:0; transform:rotate(-28deg) translateX(-180px); } 74% { opacity:1; } 84%,100% { opacity:0; transform:rotate(-28deg) translateX(250px); } }
+.space-vignette { position:absolute; inset:0; background:linear-gradient(180deg, transparent 55%, var(--paper) 100%); opacity:.74; }
+
+.hero-orbit { position:absolute; left:50%; top:32%; width:min(880px,94vw); height:330px; transform:translate(-50%,-50%) rotate(-7deg); border:1px solid var(--line); border-radius:50%; opacity:.48; }
+.hero-orbit > i:first-child { position:absolute; left:8%; top:13%; width:7px; height:7px; border-radius:50%; background:var(--accent); box-shadow:0 0 16px var(--accent); }
+.hero-orbit > i:last-child { position:absolute; right:13%; bottom:9%; width:4px; height:4px; border-radius:50%; background:var(--ink); }
+
+/* Existing glass surfaces inherit the cosmic palette in both themes. */
+.bg-white\/50, .bg-white\/45, .bg-white\/35 { background-color: var(--glass) !important; }
+.hover\:bg-white\/40:hover, .focus\:bg-white\/55:focus { background-color: color-mix(in srgb, var(--glass) 82%, var(--ink) 18%) !important; }
+.border-white\/55, .border-white\/60 { border-color: var(--glass-border) !important; }
+
+@media (max-width: 720px) {
+  .spacecraft { left: 7%; top: 18%; transform: scale(.72) rotate(-8deg); }
+  .planet-violet { right: -48px; top: 19vh; }
+  .planet-amber { display: none; }
+  .hero-orbit { top: 30%; height: 210px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .star, .spacecraft, .shooting-star { animation: none !important; }
+  .space-nebula, .star-field { transition: none; }
+}
+
+/* ---------- Orbital intro ---------- */
+.intro-cosmos {
+  color: #f3f7ff;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 48%, rgba(58, 80, 168, .18), transparent 29%),
+    radial-gradient(circle at 15% 84%, rgba(0, 184, 220, .10), transparent 28%),
+    linear-gradient(145deg, #030510, #070b1e 54%, #02040d) !important;
+}
+.intro-texture { z-index: 8; }
+.intro-nebula { position:absolute; border-radius:50%; filter:blur(90px); opacity:.24; animation:introNebula 11s ease-in-out infinite alternate; }
+.intro-nebula-a { width:42vw; height:26vw; left:-12%; top:4%; background:#5555d9; }
+.intro-nebula-b { width:38vw; height:30vw; right:-10%; bottom:-8%; background:#007eaa; animation-delay:-5s; }
+@keyframes introNebula { to { transform:translate(4vw, 3vh) scale(1.1); opacity:.34; } }
+.intro-starcloth, .about-starcloth {
+  position:absolute;
+  inset:0;
+  opacity:.72;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.95) 0 1px, transparent 1.4px),
+    radial-gradient(circle, rgba(128,216,255,.85) 0 1px, transparent 1.3px),
+    radial-gradient(circle, rgba(255,255,255,.46) 0 .7px, transparent 1px);
+  background-position: 12px 18px, 48px 71px, 9px 5px;
+  background-size: 107px 113px, 173px 181px, 53px 59px;
+  animation:starclothDrift 38s linear infinite;
+}
+@keyframes starclothDrift { to { background-position:119px 131px, -125px 252px, 62px 64px; } }
+.intro-grid {
+  position:absolute;
+  left:50%;
+  bottom:-25vh;
+  width:120vw;
+  height:62vh;
+  transform:translateX(-50%) perspective(430px) rotateX(62deg);
+  transform-origin:center top;
+  opacity:.14;
+  background-image:linear-gradient(rgba(126,233,255,.34) 1px, transparent 1px), linear-gradient(90deg, rgba(126,233,255,.34) 1px, transparent 1px);
+  background-size:72px 46px;
+  mask-image:linear-gradient(to bottom, transparent, #000 30%);
+  animation:gridFly 7s linear infinite;
+}
+@keyframes gridFly { to { background-position:0 46px, 72px 0; } }
+.intro-topline { position:absolute; z-index:10; top:25px; left:34px; right:34px; display:flex; justify-content:space-between; gap:24px; color:rgba(226,238,255,.58); font:600 9px/1.2 "Archivo", sans-serif; letter-spacing:.2em; }
+.intro-signal { color:#8cecff; }
+.intro-signal i { display:inline-block; width:6px; height:6px; margin-right:7px; border-radius:50%; background:#83f3c5; box-shadow:0 0 12px #83f3c5; animation:signalPulse 1.6s ease-in-out infinite; }
+@keyframes signalPulse { 50% { opacity:.35; transform:scale(.65); } }
+.intro-loading { position:absolute; z-index:20; left:50%; top:50%; width:min(310px,62vw); transform:translate(-50%,-50%); transition:opacity .45s ease, transform .6s ease; }
+.intro-loading.is-complete { opacity:0; transform:translate(-50%,-50%) scale(1.12); pointer-events:none; }
+.intro-loading div { display:flex; justify-content:space-between; color:#b6c4dd; font:600 9px/1 "Archivo", sans-serif; letter-spacing:.18em; }
+.intro-loading b { color:#8cecff; }
+.intro-loading > i { display:block; height:1px; margin-top:12px; background:rgba(170,211,255,.18); }
+.intro-loading > i em { display:block; height:100%; background:#8cecff; box-shadow:0 0 13px #8cecff; transition:width .1s linear; }
+.intro-wordmark { position:absolute; z-index:1; left:50%; top:49%; width:100%; transform:translate(-50%,-50%); display:flex; justify-content:space-between; padding:0 clamp(28px,6vw,110px); font:500 clamp(64px,12vw,205px)/.75 "Instrument Serif", Georgia, serif; letter-spacing:-.055em; color:rgba(205,229,255,.025); -webkit-text-stroke:1px rgba(174,211,255,.13); white-space:nowrap; }
+.intro-wordmark span:last-child { margin-top:1em; }
+.intro-portal { position:absolute; z-index:3; left:50%; top:50%; width:min(62vw,650px); aspect-ratio:1.28; transform:translate(-50%,-50%); display:flex; align-items:center; justify-content:center; }
+.portal-halo { position:absolute; width:64%; aspect-ratio:1; border-radius:50%; background:radial-gradient(circle, rgba(108,171,255,.22), rgba(73,77,191,.08) 42%, transparent 69%); filter:blur(13px); animation:portalBreathe 5s ease-in-out infinite; }
+@keyframes portalBreathe { 50% { transform:scale(1.16); opacity:.65; } }
+.portal-orbit { position:absolute; z-index:4; left:50%; top:50%; border:1px solid rgba(166,216,255,.28); border-radius:50%; transform:translate(-50%,-50%) rotate(-16deg); animation:portalOrbit 18s linear infinite; }
+.portal-orbit-a { width:82%; height:46%; }
+.portal-orbit-b { width:95%; height:58%; transform:translate(-50%,-50%) rotate(24deg); animation-duration:25s; animation-direction:reverse; }
+.portal-orbit-c { width:70%; height:86%; transform:translate(-50%,-50%) rotate(64deg); border-style:dashed; opacity:.45; animation-duration:32s; }
+.portal-orbit i { position:absolute; left:8%; top:13%; width:7px; height:7px; border-radius:50%; background:#8cecff; box-shadow:0 0 17px #8cecff; }
+.portal-orbit b { position:absolute; right:7%; bottom:4%; color:#9ab8d6; font:600 8px/1 "Archivo", sans-serif; letter-spacing:.14em; }
+@keyframes portalOrbit { to { transform:translate(-50%,-50%) rotate(344deg); } }
+.portal-planet { position:absolute; z-index:5; width:52px; height:52px; right:-2%; top:17%; border-radius:50%; background:radial-gradient(circle at 30% 28%, #e0f1ff, #7b85c7 38%, #242748 74%); box-shadow:-8px 10px 22px rgba(102,118,207,.28); animation:planetFloat 6s ease-in-out infinite; }
+.portal-planet i { position:absolute; left:-13px; top:20px; width:78px; height:15px; border:2px solid rgba(180,220,255,.5); border-left-color:transparent; border-right-color:transparent; border-radius:50%; transform:rotate(-13deg); }
+@keyframes planetFloat { 50% { transform:translateY(-13px) rotate(4deg); } }
+.intro-satellite { position:absolute; z-index:6; left:-2%; top:28%; width:54px; height:22px; transform:rotate(12deg); animation:satelliteFloat 8s ease-in-out infinite; }
+.intro-satellite > i { position:absolute; left:20px; top:5px; width:14px; height:14px; border-radius:4px; background:#b8c8dc; box-shadow:inset -4px -3px #455269; }
+.intro-satellite > b, .intro-satellite > em { position:absolute; top:7px; width:18px; height:9px; border:1px solid #69b4e9; background:repeating-linear-gradient(90deg,#17325d 0 4px,#4e91c7 5px); }
+.intro-satellite > b { left:0; }.intro-satellite > em { right:0; }
+@keyframes satelliteFloat { 50% { transform:rotate(4deg) translate(9px,-12px); } }
+.portal-caption { position:absolute; z-index:7; padding:8px 11px; border:1px solid rgba(166,216,255,.22); background:rgba(7,12,29,.6); backdrop-filter:blur(10px); color:rgba(225,238,255,.7); font:600 8px/1 "Archivo", sans-serif; letter-spacing:.18em; }
+.portal-caption span { color:#8cecff; margin-right:7px; }
+.portal-caption-left { left:1%; bottom:17%; }.portal-caption-right { right:0; top:34%; }
+.intro-manifesto { z-index:10; max-width:16ch; color:rgba(241,247,255,.78); }
+.intro-manifesto em { color:#8cecff; }
+.intro-enter { position:absolute; z-index:20; right:34px; bottom:27px; display:flex; align-items:center; gap:13px; color:rgba(226,238,255,.64); text-align:left; font:600 8px/1.5 "Archivo", sans-serif; letter-spacing:.18em; cursor:pointer; }
+.intro-enter > i { display:grid; place-items:center; width:42px; height:42px; border:1px solid rgba(166,216,255,.3); border-radius:50%; font-style:normal; animation:enterPulse 2.2s ease-in-out infinite; }
+.intro-enter b { font-size:17px; color:#8cecff; }
+@keyframes enterPulse { 50% { transform:translateY(5px); box-shadow:0 0 24px rgba(126,233,255,.16); } }
+
+/* ---------- About: mission dossier ---------- */
+.about-cosmos { isolation:isolate; background:rgba(2,4,13,.94); backdrop-filter:blur(28px) saturate(1.25); }
+.about-starcloth { z-index:-1; opacity:.38; }
+.about-aurora { position:fixed; z-index:-1; border-radius:50%; filter:blur(110px); opacity:.19; animation:auroraMove 12s ease-in-out infinite alternate; }
+.about-aurora-a { width:50vw; height:38vw; left:10%; top:26%; background:#6266dc; }
+.about-aurora-b { width:36vw; height:31vw; right:-7%; bottom:-11%; background:#0097b8; animation-delay:-6s; }
+@keyframes auroraMove { to { transform:translate(5vw,-3vh) scale(1.12); } }
+.about-constellation { position:fixed; z-index:0; width:240px; height:170px; left:5vw; top:12vh; opacity:.28; transform:rotate(-12deg); background:linear-gradient(25deg, transparent 49.5%, rgba(140,236,255,.6) 50%, transparent 50.5%); }
+.about-constellation i { position:absolute; width:5px; height:5px; border-radius:50%; background:#dff8ff; box-shadow:0 0 12px #8cecff; animation:starPulse 4s ease-in-out infinite; }
+.about-constellation i:nth-child(1){left:2%;top:72%}.about-constellation i:nth-child(2){left:24%;top:48%}.about-constellation i:nth-child(3){left:48%;top:58%}.about-constellation i:nth-child(4){left:70%;top:31%}.about-constellation i:nth-child(5){right:2%;top:8%}
+.about-copy, .about-portrait-wrap { opacity:0; transform:translateY(22px); }
+.about-cosmos.is-open .about-copy { animation:aboutReveal .75s .12s cubic-bezier(.2,.8,.2,1) forwards; }
+.about-cosmos.is-open .about-portrait-wrap { animation:aboutReveal .85s .25s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes aboutReveal { to { opacity:1; transform:translateY(0); } }
+.about-kicker { display:inline-flex; align-items:center; gap:9px; margin-bottom:20px; color:rgba(223,238,255,.52); font:600 9px/1 "Archivo",sans-serif; letter-spacing:.2em; }
+.about-kicker i { width:34px; height:1px; background:#8cecff; box-shadow:0 0 10px #8cecff; }
+.about-name { color:transparent; -webkit-text-stroke:1px #8cecff; text-shadow:0 0 28px rgba(126,233,255,.18); }
+.about-facts > div { min-height:72px; padding:14px 16px; border:1px solid rgba(171,213,255,.16); background:rgba(9,15,35,.5); backdrop-filter:blur(14px); }
+.about-facts span { display:block; margin-bottom:7px; color:#8cecff; font:600 8px/1 "Archivo",sans-serif; letter-spacing:.2em; }
+.about-facts b { display:block; color:rgba(238,245,255,.78); font:500 12px/1.3 "Archivo",sans-serif; }
+.about-portrait-wrap { width:min(430px,78vw); aspect-ratio:.92; justify-self:center; display:grid; place-items:center; }
+.about-photo-shell { position:relative; z-index:2; width:74%; height:84%; overflow:hidden; border-radius:48% 48% 45% 45% / 38% 38% 58% 58%; border:1px solid rgba(177,220,255,.35); box-shadow:0 35px 80px rgba(0,0,0,.44), 0 0 60px rgba(84,108,217,.16); background:#090e22; }
+.about-photo-shell img { width:100%; height:100%; object-fit:cover; object-position:50% 38%; filter:saturate(.88) contrast(1.04); }
+.about-photo-shell::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 54%,rgba(4,8,22,.88)); }
+.about-scanline { position:absolute; z-index:2; left:0; right:0; height:1px; top:0; background:#8cecff; box-shadow:0 0 14px #8cecff; opacity:.65; animation:scanPhoto 5s linear infinite; }
+@keyframes scanPhoto { 50%,100% { top:100%; opacity:.05; } }
+.about-photo-code { position:absolute; z-index:3; left:18px; bottom:16px; color:rgba(225,240,255,.68); font:600 8px/1 "Archivo",sans-serif; letter-spacing:.16em; }
+.about-orbit { position:absolute; z-index:1; left:50%; top:50%; border:1px solid rgba(159,213,255,.28); border-radius:50%; animation:aboutOrbit 22s linear infinite; }
+.about-orbit-a { width:112%; height:64%; transform:translate(-50%,-50%) rotate(-14deg); }
+.about-orbit-b { width:84%; height:114%; transform:translate(-50%,-50%) rotate(52deg); animation-duration:31s; animation-direction:reverse; border-style:dashed; opacity:.52; }
+.about-orbit i { position:absolute; left:7%; top:11%; width:8px; height:8px; border-radius:50%; background:#8cecff; box-shadow:0 0 15px #8cecff; }
+@keyframes aboutOrbit { to { transform:translate(-50%,-50%) rotate(346deg); } }
+.about-planet-label { position:absolute; z-index:4; right:-7%; top:17%; padding:10px 13px; border:1px solid rgba(176,219,255,.2); background:rgba(5,10,25,.72); backdrop-filter:blur(12px); }
+.about-planet-label span,.about-planet-label b { display:block; }.about-planet-label span { color:#8cecff; font:600 7px/1 "Archivo",sans-serif; letter-spacing:.2em; }.about-planet-label b { margin-top:5px; font:600 10px/1 "Archivo",sans-serif; letter-spacing:.12em; }
+.about-moon { position:absolute; z-index:3; left:-4%; bottom:13%; width:55px; height:55px; border-radius:50%; background:radial-gradient(circle at 31% 28%,#e7f4ff,#828ec9 42%,#2a2e52 78%); box-shadow:0 0 30px rgba(116,133,220,.3); animation:planetFloat 6.5s ease-in-out infinite; }
+.about-moon i { position:absolute; width:75px; height:16px; left:-10px; top:21px; border:2px solid rgba(167,217,255,.45); border-left-color:transparent; border-right-color:transparent; border-radius:50%; transform:rotate(17deg); }
+
+/* ---------- Rocket card arrivals ---------- */
+.rocket-card {
+  --flight:1;
+  --engine:0;
+  --velocity:1;
+  isolation:isolate;
+  transition:border-color .2s linear;
+  border-color:var(--line);
+}
+.cargo-stamp {
+  position:absolute;
+  z-index:3;
+  left:14px;
+  top:12px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:color-mix(in srgb,var(--ink) 48%,transparent);
+  font:700 7px/1 "Archivo",sans-serif;
+  letter-spacing:.18em;
+  opacity:calc(.45 + var(--flight) * .55);
+  pointer-events:none;
+}
+.cargo-stamp i { width:5px; height:5px; border-radius:50%; background:#8cecff; box-shadow:0 0 10px #8cecff; animation:cargoSignal .65s steps(2,end) infinite; }
+@keyframes cargoSignal { 50% { opacity:.25; } }
+
+/* A separate rocket tug pushes each card as cargo. It switches sides with the
+   approach direction and fades only after the payload has docked. */
+.rocket-tug {
+  position:absolute;
+  z-index:5;
+  top:50%;
+  width:92px;
+  height:48px;
+  opacity:var(--engine);
+  pointer-events:none;
+  filter:drop-shadow(0 9px 14px rgba(0,0,0,.36));
+}
+[data-flight-side="left"] .rocket-tug { right:calc(100% + 18px); transform:translateY(-50%); }
+[data-flight-side="right"] .rocket-tug { left:calc(100% + 18px); transform:translateY(-50%) scaleX(-1); }
+.tug-body {
+  position:absolute;
+  z-index:3;
+  left:19px;
+  top:8px;
+  width:61px;
+  height:31px;
+  border:1px solid rgba(224,242,255,.62);
+  border-radius:45% 68% 68% 45% / 50%;
+  background:linear-gradient(180deg,#e7f1fb 0%,#8fa2ba 45%,#394a63 100%);
+  box-shadow:inset 0 2px 3px rgba(255,255,255,.64),inset -12px -7px 12px rgba(16,27,49,.35);
+}
+.tug-window { position:absolute; right:12px; top:7px; width:14px; height:14px; border:2px solid rgba(229,247,255,.76); border-radius:50%; background:radial-gradient(circle at 35% 30%,#dfffff,#39badd 38%,#153863 76%); box-shadow:0 0 13px rgba(93,222,255,.82); }
+.tug-seam { position:absolute; left:15px; top:4px; bottom:4px; width:1px; background:rgba(34,52,77,.32); }
+.tug-fin { position:absolute; z-index:2; left:27px; width:25px; height:15px; background:linear-gradient(90deg,#455a78,#a5b8cc); }
+.tug-fin-top { top:1px; clip-path:polygon(0 100%,38% 0,100% 100%); }
+.tug-fin-bottom { bottom:1px; clip-path:polygon(0 0,38% 100%,100% 0); }
+.tug-tether { position:absolute; z-index:1; left:78px; top:22px; width:36px; height:3px; background:linear-gradient(90deg,#8398b3,#d9efff); box-shadow:0 0 6px rgba(140,236,255,.46); }
+.tug-tether::after { content:""; position:absolute; right:-2px; top:-5px; width:7px; height:13px; border-radius:2px; background:#9fb7cd; }
+.tug-engine { position:absolute; z-index:4; left:12px; top:13px; width:11px; height:21px; border-radius:4px 0 0 4px; background:#455a72; }
+.tug-engine > i,.tug-engine > b,.tug-engine > em { position:absolute; right:7px; top:50%; height:var(--h); width:var(--w); transform:translateY(-50%); transform-origin:right center; clip-path:polygon(0 50%,100% 0,100% 100%); animation:engineFlicker .11s ease-in-out infinite alternate; }
+.tug-engine > i { --h:30px; --w:88px; background:linear-gradient(90deg,transparent 0%,rgba(201,35,18,.18) 22%,#ff4b20 48%,#ff9a38 72%,#ffd979 92%); opacity:.94; filter:blur(1px); }
+.tug-engine > b { --h:17px; --w:61px; background:linear-gradient(90deg,transparent,#e93518 28%,#ff8a2d 62%,#ffe08a 94%); animation-delay:-.06s; filter:drop-shadow(0 0 8px #ff6a24); }
+.tug-engine > em { --h:7px; --w:35px; background:linear-gradient(90deg,transparent,#ffd469 40%,#fff8d8 88%); filter:blur(.35px); box-shadow:0 0 12px #ffb33f; }
+@keyframes engineFlicker { to { transform:translateY(-50%) scaleX(.77) scaleY(1.17); } }
+
+
+@media (max-width: 760px) {
+  .intro-topline span:nth-child(2) { margin-left:auto; }
+  .intro-topline span:last-child { display:none; }
+  .intro-wordmark { flex-direction:column; align-items:center; justify-content:center; text-align:center; font-size:clamp(70px,22vw,120px); }
+  .intro-wordmark span:last-child { margin-top:.3em; }
+  .intro-portal { width:min(92vw,560px); }
+  .intro-portal svg { width:88vw; }
+  .portal-caption { display:none; }
+  .portal-planet { right:4%; top:14%; transform:scale(.72); }
+  .intro-satellite { left:6%; transform:scale(.8); }
+  .intro-manifesto { left:20px; bottom:22px; max-width:11ch; font-size:18px; }
+  .intro-enter { right:20px; bottom:21px; }
+  .about-layout { padding-top:92px; padding-bottom:110px; }
+  .about-copy { order:2; }
+  .about-portrait-wrap { order:1; width:min(340px,78vw); }
+  .about-facts { grid-template-columns:1fr; }
+  .about-quote { display:none; }
+  .about-planet-label { right:-2%; }
+  .rocket-tug { scale:.72; }
+  [data-flight-side="left"] .rocket-tug { right:calc(100% + 2px); transform-origin:right center; }
+  [data-flight-side="right"] .rocket-tug { left:calc(100% + 2px); transform-origin:left center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-nebula,.intro-starcloth,.intro-grid,.intro-signal i,.portal-halo,.portal-orbit,.portal-planet,.intro-satellite,.intro-enter>i,
+  .about-starcloth,.about-aurora,.about-constellation i,.about-scanline,.about-orbit,.about-moon,.cargo-stamp i,
+  .tug-engine>i,.tug-engine>b,.tug-engine>em { animation:none !important; }
+}
 
 /* keyframes (not expressible inline) */
 @keyframes floaty { 0%, 100% { transform: rotate(5deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-9px); } }
