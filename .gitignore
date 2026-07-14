@@ -1,6 +1,7 @@
 .env
 .env.local
 .DS_Store
-.wrangler/
 dist/
 node_modules/
+.vercel/
+.wrangler/
