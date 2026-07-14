@@ -32,5 +32,3 @@ npm run preview
 - [GitHub](https://github.com/Okbatti)
 - [LinkedIn](https://www.linkedin.com/in/owais-ali-khadim-batti-2278831a1/)
 - Email: okbatti@gmail.com
-
-Project-card photography is sourced from Unsplash. The portfolio design is adapted from the open-source [Portfolio-inflict.in](https://github.com/inflictt/Portfolio-inflict.in) repository.
